@@ -1,0 +1,70 @@
+﻿@page "/projects"
+@inject HttpClient Http
+@using MongoSkillsLibrary
+
+<h1>Projects</h1>
+
+@if (projects == null)
+{
+    <p><em>Loading Projects...</em></p>
+}
+else
+{
+    <EditForm Model="@newProject" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <InputText id="name" @bind-Value="newProject.Name" />
+
+        <button type="submit">Submit</button>
+    </EditForm>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in projects)
+            {
+                <tr>
+                    <td>@project.Name</td>
+                    <td><button class="btn btn-primary">Click me</button></td>
+                </tr>
+                @if (project.Skills != null)
+                {
+                    foreach (Skill skill in project.Skills)
+                    {
+                        <tr>&nbsp&nbsp&nbsp&nbsp @skill.Name</tr>
+                    }
+                }
+
+                <tr>
+                    <EditProject project="@project" />
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Project newProject = new Project { Name = "" };
+
+    private async void HandleValidSubmit()
+    {
+        Project project = await Http.PostJsonAsync<Project>("https://localhost:44394/project", newProject.Name);
+
+        projects.Add(project);
+
+        StateHasChanged();
+
+    }
+
+    private List<Project> projects;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = await Http.GetJsonAsync<List<Project>>("https://localhost:44394/project");
+    }
+}

@@ -1,0 +1,10 @@
+﻿@inject HttpClient Http
+@using MongoSkillsLibrary
+
+<h1>Edit Project Component @project.Name</h1>
+
+
+@code {
+    [Parameter]
+    public Project project { get; set; }
+}

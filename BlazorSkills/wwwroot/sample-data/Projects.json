@@ -1,0 +1,15 @@
+﻿[
+  {
+    "Name": "Germ Buster",
+    "Skills": [
+      { "Name": "C#" },
+      { "Name": "Xamarin" },
+      { "Name": "Android" },
+      { "Name": "Git" }
+    ],
+    "Colleagues": [
+      { "Name": "Nick Hardman" },
+      { "Name": "Richard Tasker"}
+    ]
+  }
+]

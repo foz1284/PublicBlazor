@@ -1,0 +1,60 @@
+﻿@inject HttpClient Http
+
+<h1>Skills</h1>
+
+@if (skills == null)
+{
+    <p><em>Loading Skills...</em></p>
+}
+else
+{
+<p>skills</p>
+    @foreach (var skill in skills)
+    {
+        
+        <tr>
+            <td>@skill.Name</td>
+            <td><img src="@skill.ImageURL" /></td>
+        </tr>
+    }
+}
+
+
+@code {
+    private Skill newSkill = new Skill { Name = "" };
+
+    private async void HandleValidSubmit()
+    {
+        Skill skill = await Http.PostJsonAsync<Skill>("https://localhost:44394/skill", newSkill.Name);
+
+        skills.Add(skill);
+
+        StateHasChanged();
+
+    }
+
+
+    private List<Skill> skills;
+
+    protected override async Task OnInitializedAsync()
+    {
+        skills = await Http.GetJsonAsync<List<Skill>>("https://localhost:44394/skill");
+    }
+
+    public class Skill
+    {
+        public string Name { get; set; }
+        public string ImageURL { get; set; }
+    }
+
+    public class Project
+    {
+        public string Name { get; set; }
+        public List<Skill> skills { get; set; }
+    }
+
+    public class Company
+    {
+        public string Name { get; set; }
+    }
+}

@@ -1,0 +1,66 @@
+﻿@page "/companies"
+@inject HttpClient Http
+@using MongoSkillsLibrary
+
+<h1>Companies</h1>
+
+@if (companies == null)
+{
+    <p><em>Loading Companies...</em></p>
+}
+else
+{
+    <EditForm Model="@newCompany" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <InputText id="name" @bind-Value="newCompany.Name" />
+
+        <button type="submit">Submit</button>
+    </EditForm>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var company in companies)
+            {
+                <tr>
+                    <td>@company.Name</td>
+                    <td></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    private Company newCompany = new Company { Name = "" };
+
+    private async void HandleValidSubmit()
+    {
+        Company company = await Http.PostJsonAsync<Company>("https://localhost:44394/company", newCompany.Name);
+
+        companies.Add(company);
+
+        StateHasChanged();
+
+    }
+
+    private List<Company> companies;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            companies = await Http.GetJsonAsync<List<Company>>("https://localhost:44394/company");
+        }
+        catch (Exception e)
+        {
+            throw;
+        }
+    }
+}

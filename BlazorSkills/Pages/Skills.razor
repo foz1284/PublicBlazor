@@ -1,0 +1,60 @@
+﻿@page "/skills"
+@inject HttpClient Http
+@using MongoSkillsLibrary
+
+<h1>Skills</h1>
+
+@if (skills == null)
+{
+    <p><em>Loading Skills...</em></p>
+}
+else
+{
+    <EditForm Model="@newSkill" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <InputText id="name" @bind-Value="newSkill.Name" />
+
+        <button type="submit">Submit</button>
+    </EditForm>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var skill in skills)
+            {
+                <tr>
+                    <td>@skill.Name</td>
+                    <td><img src="@skill.ImageURL" /></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    private Skill newSkill = new Skill { Name = "" };
+
+    private async void HandleValidSubmit()
+    {
+        Skill skill = await Http.PostJsonAsync<Skill>("https://localhost:44394/skill", newSkill.Name);
+
+        skills.Add(skill);
+
+        StateHasChanged();
+
+    }
+
+
+    private List<Skill> skills;
+
+    protected override async Task OnInitializedAsync()
+    {
+        skills = await Http.GetJsonAsync<List<Skill>>("https://localhost:44394/skill");
+    }
+}
